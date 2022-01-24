@@ -18,7 +18,12 @@ app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
-// adding additional endpoints
+app.post("/urls", (req, res) => {
+  console.log(req.body);
+  res.send("Ok");
+})
+
+
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
