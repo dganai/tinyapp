@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port
 
-
+// setting to ejs
 app.set("view engine", "ejs");
 
 const bodyParser = require("body-parser");
@@ -28,31 +28,33 @@ function generateRandomString() {
 }
 
 
+// render mainpage and form to shorten new URLs
+app.get("/urls", (req, res) => {
+  const templateVars = { urls: urlDatabase };
+  res.render("urls_index", templateVars);
+});
+
+// route for creating new shortURL
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 
   
 });
 
-
-app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
-  res.render("urls_index", templateVars);
+// render for shortened URL with corresponding longURL
+app.get("/urls/:shortURL", (req, res) => {
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  res.render("urls_show", templateVars);
 });
 
 
 // form submission
 app.post("/urls", (req, res) => {
-  let shortURL = generateRandomString(); // creating random short url and add to URL database then redirect
+  const shortURL = generateRandomString(); // creating random short url and add to URL database then redirect
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`/urls/${shortURL}`);
 });
 
-
-app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
-  res.render("urls_show", templateVars);
-});
 
 
 app.get("/u/:shortURL", (req, res) => {
@@ -60,9 +62,23 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+// delete button entry
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
+});
+
+// edit button entry
+app.post('/urls/:shortURL', (req, res) => {
+  const shortURL = req.params.shortURL;
+  res.redirect(`/urls/${shortURL}`);
+});
+
+// update resource and redirect to mainpage
+app.post("/urls/:shortURL/update", (req, res) => {
+  const shortURL = req.params.shortURL;
+  urlDatabase[shortURL] = `http://${req.body.longURL}`;
+  res.redirect(`/urls/${shortURL}`);
 });
 
 
@@ -71,6 +87,8 @@ app.get("/urls.json", (req, res) => {
 });
 
 
+
+// set port
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
