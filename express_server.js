@@ -30,6 +30,8 @@ function generateRandomString() {
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
+
+  
 });
 
 
@@ -58,7 +60,10 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
-
+app.post("/urls/:shortURL/delete", (req, res) => {
+  delete urlDatabase[req.params.shortURL];
+  res.redirect("/urls");
+});
 
 
 app.get("/urls.json", (req, res) => {
