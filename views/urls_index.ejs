@@ -8,8 +8,10 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
   <title>TinyApp</title>
 </head>
+
 <body>
-  <%- include('partials/_header') %>
+    <%- include('partials/_header') %>
+
   <main style="margin: 1em;">
     <h3>My URLs</h3>
     <table class="table">
@@ -27,10 +29,12 @@
             <td><%= url %></td>
             <td><%= urls[url] %></td>
             <td>
-              <a class="btn btn-outline-primary" href="/urls/<%= url %>" role="button">Edit</a>
+              <form method="GET" action="/urls/<%= url %>">
+              <button type="submit" class="btn btn-outline-primary">Edit</button>
+          </form>
             </td>
             <td> 
-              <form method="POST" action ="/urls/9sm5xK/delete">
+              <form method="POST" action ="/urls/<%= url %>/delete">
               <button type="submit" class="btn btn-outline-danger">Delete</button>
             </form>
             </td>
