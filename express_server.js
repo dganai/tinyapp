@@ -17,9 +17,12 @@ const urlDatabase = {
 };
 
 
+// create users object to store and access users in the app
+const users = {}
 
-const generateRandomString = () => {
+
 // generate random strings for a user ID
+const generateRandomString = () => {
   const characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   let randomStr = "";
   for (let i = 0; i < 6; i++) {
@@ -88,6 +91,24 @@ app.post("/urls/:shortURL/update", (req, res) => {
 });
 
 
+// creating registration route
+app.get('/register', (req, res) => {
+  res.render("_registration")
+
+})
+
+// resgistration handler that takes registration form data
+app.post('/register', (req, res) => {
+  // new user object using generateRandomString function 
+  let userID = generateRandomString();
+  users[userID] = {
+    id: userID,
+    email: req.body.email,
+    password: req.body.password,
+  }
+  
+  res.cookie("users", userID); 
+})
 
 // login route
 app.post('/login', (req, res) => {
@@ -106,11 +127,7 @@ app.get("/urls.json", (req, res) => {
 });
 
 
-// creating registration route
-app.get('/register', (req, res) => {
-  res.render("_registration")
 
-})
 
 
 
