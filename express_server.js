@@ -144,6 +144,24 @@ app.get('/login', (req, res) => {
 
 // login route
 app.post('/login', (req, res) => {
+  const email = req.body.email
+  const password = req.body.password
+
+  if(!email || !password) {
+    return res.status(400).send("Enter email and password")
+  }
+  // check if email is valid
+  if (!findEmail(email)) {
+    return res.status(403).send("Email cannot be found")
+  }
+  
+  // check to see if email is found, compare passwords with existing user's password
+  let userID = findEmail(email);
+  if(password !== users[userID].password) {
+    return res.status(403).send("Password is incorrect")
+  }
+
+  // set user_id cookie to user's random ID and redirect to /urls
   res.cookie("user_id", userID);
   res.redirect("/urls");
 });
