@@ -102,7 +102,8 @@ app.post("/urls/:shortURL/update", (req, res) => {
 
 // creating registration route
 app.get('/register', (req, res) => {
-  res.render("_registration");
+  const templateVars = { user: users[req.cookies["user_id"]]}
+  res.render("_registration", templateVars);
 
 });
 
