@@ -14,11 +14,14 @@
     <% if (!user) { %>
     <form class ="form-inline form-inline-sm" method="POST" action="/login">
         <div class="form-group mb-2">
-
-<input class="form-control" type="text" name="username" placeholder="Username" style="width: 200px; margin-right: 1em;">
-<button type="submit" class="btn btn-outline-dark" >Login</button>
+<button type="submit" class="btn btn-outline-dark">Login</button>
 </div>
     </form>
+    <form class ="form-inline form-inline-sm" method="POST" action="/register">
+    <div class="form-group mb-2">
+      <button type="submit" class="btn btn-primary">Register</button>
+    </div>
+  </form>
     <% } else { %>
       <form class="form-inline form-inline-sm" method="POST" action="/logout">
         <div class="form-group mb-2">
