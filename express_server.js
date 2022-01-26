@@ -106,8 +106,8 @@ app.post('/register', (req, res) => {
     email: req.body.email,
     password: req.body.password,
   }
-  
-  res.cookie("users", userID); 
+  // user_id cookie for newly generated userID
+  res.cookie("user_id", userID); 
 })
 
 // login route
