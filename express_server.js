@@ -18,7 +18,7 @@ const urlDatabase = {
 
 
 // create users object to store and access users in the app
-const users = {}
+const users = {};
 
 
 // generate random strings for a user ID
@@ -38,13 +38,13 @@ const generateRandomString = () => {
 
 // render mainpage and form to shorten new URLs
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
+  const templateVars = { urls: urlDatabase, user: users[req.cookies["user_id"]] };
   res.render("urls_index", templateVars);
 });
 
 // route for creating new shortURL
 app.get("/urls/new", (req, res) => {
-  const templateVars = { username: req.cookies["username"] };
+  const templateVars = { user: users[req.cookies["user_id"]] };
   res.render("urls_new", templateVars);
 
   
@@ -52,7 +52,7 @@ app.get("/urls/new", (req, res) => {
 
 // render for shortened URL with corresponding longURL
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies["username"] };
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[req.cookies["user_id"]] };
   res.render("urls_show", templateVars);
 });
 
@@ -93,33 +93,36 @@ app.post("/urls/:shortURL/update", (req, res) => {
 
 // creating registration route
 app.get('/register', (req, res) => {
-  res.render("_registration")
+  res.render("_registration");
 
-})
+});
 
 // resgistration handler that takes registration form data
 app.post('/register', (req, res) => {
-  // new user object using generateRandomString function 
+  // new user object using generateRandomString function
   let userID = generateRandomString();
   users[userID] = {
     id: userID,
     email: req.body.email,
     password: req.body.password,
-  }
+  };
   // user_id cookie for newly generated userID
-  res.cookie("user_id", userID); 
-})
+  res.cookie("user_id", userID);
+  res.redirect('/urls');
+});
+
+
 
 // login route
 app.post('/login', (req, res) => {
-  res.cookie("username", req.body.username);
+  res.cookie("user_id", userID);
   res.redirect("/urls");
 });
 
 // logout
 app.post('/logout', (req, res) => {
-  res.clearCookie("username");
-  res.redirect("/urls/new");
+  res.clearCookie("user_id");
+  res.redirect("/urls");
 });
 
 app.get("/urls.json", (req, res) => {
