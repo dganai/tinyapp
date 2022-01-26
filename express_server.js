@@ -106,6 +106,13 @@ app.get("/urls.json", (req, res) => {
 });
 
 
+// creating registration route
+app.get('/register', (req, res) => {
+  res.render("_registration")
+
+})
+
+
 
 // set port
 app.listen(PORT, () => {
