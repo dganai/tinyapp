@@ -108,6 +108,19 @@ app.get('/register', (req, res) => {
 
 // resgistration handler that takes registration form data
 app.post('/register', (req, res) => {
+  const email = req.body.email
+  const password = req.body.password
+
+  // if no email/password are entered, send 400 error 
+  if (!email || !password) {
+    return res.status(400).send('Email and Password cannot be blank')
+  }
+
+  // if email is already registered
+  if(findUserEmail(email)) {
+    return res.status(400).send('Email is already registered')
+  }
+
   // new user object using generateRandomString function
   let userID = generateRandomString();
   users[userID] = {
