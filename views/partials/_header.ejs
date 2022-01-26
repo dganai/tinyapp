@@ -12,14 +12,14 @@
       </div>
     </div>
     <% if (!user) { %>
-    <form class ="form-inline form-inline-sm" method="POST" action="/login">
+    <form class ="form-inline form-inline-sm" method="GET" action="/login">
         <div class="form-group mb-2">
 <button type="submit" class="btn btn-outline-dark">Login</button>
 </div>
     </form>
-    <form class ="form-inline form-inline-sm" method="POST" action="/register">
+    <form class ="form-inline form-inline-sm" method="GET" action="/register">
     <div class="form-group mb-2">
-      <button type="submit" class="btn btn-primary">Register</button>
+      <button type="submit" class="btn btn-outline-dark">Register</button>
     </div>
   </form>
     <% } else { %>
