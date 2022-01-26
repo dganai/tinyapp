@@ -117,7 +117,7 @@ app.post('/register', (req, res) => {
   }
 
   // if email is already registered
-  if(findUserEmail(email)) {
+  if(findEmail(email)) {
     return res.status(400).send('Email is already registered')
   }
 
@@ -132,6 +132,13 @@ app.post('/register', (req, res) => {
   res.cookie("user_id", userID);
   res.redirect('/urls');
 });
+
+
+// login route for login form template
+app.get('/login', (req, res) => {
+  const templateVars = { user: users[req.cookies["user_id"]] };
+  res.render("login", templateVars)
+})
 
 
 
