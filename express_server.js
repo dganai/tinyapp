@@ -32,6 +32,7 @@ const generateRandomString = () => {
 };
 
 
+
 // render mainpage and form to shorten new URLs
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
@@ -97,7 +98,7 @@ app.post('/login', (req, res) => {
 // logout
 app.post('/logout', (req, res) => {
   res.clearCookie("username");
-  res.redirect("/urls");
+  res.redirect("/urls/new");
 });
 
 app.get("/urls.json", (req, res) => {
