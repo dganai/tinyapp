@@ -34,6 +34,15 @@ const generateRandomString = () => {
   return randomStr;
 };
 
+// helper function to find email in users obj
+const findEmail = (email) => {
+  for (const user in users) {
+    if (email === users[user].email) {
+      return user;
+    }
+  }
+  return false;
+};
 
 
 // render mainpage and form to shorten new URLs
