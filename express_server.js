@@ -67,9 +67,9 @@ const urlsForUser = (id) => {
 
 // render mainpage and form to shorten new URLs
 app.get("/urls", (req, res) => {
-  if (!req.cookies["user_id"]) {
-    return res.status(403).send("Please log in to view shortened URLs");
-  }
+  // if (!req.cookies["user_id"]) {
+  //  return res.status(403).send("Please log in to view shortened URLs");
+  // }
   const templateVars = { urls: urlsForUser(urlDatabase), user: users[req.cookies["user_id"]] };
   res.render("urls_index", templateVars);
 });
