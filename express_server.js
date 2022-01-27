@@ -52,12 +52,25 @@ const findEmail = (email) => {
 };
 
 
+// function which returns the URLs where the userID is equal to the id of the currently logged-in user
+const urlsForUser = (id) => {
+  let userURL = {};
+  for (const url in urlDatabase) {
+    if (id === urlDatabase[url].userID) {
+      userURL[url] = urlDatabase[url];
+    }
+  }
+  return userURL;
+};
+
+
+
 // render mainpage and form to shorten new URLs
 app.get("/urls", (req, res) => {
-  if(!req.cookies["user_id"]) {
-    return res.status(403).send("Please log in to view shortened URLs")
+  if (!req.cookies["user_id"]) {
+    return res.status(403).send("Please log in to view shortened URLs");
   }
-  const templateVars = { urls: urlDatabase, user: users[req.cookies["user_id"]] };
+  const templateVars = { urls: urlsForUser(urlDatabase), user: users[req.cookies["user_id"]] };
   res.render("urls_index", templateVars);
 });
 
@@ -76,8 +89,16 @@ app.get("/urls/new", (req, res) => {
 
 // render for shortened URL with corresponding longURL
 app.get("/urls/:shortURL", (req, res) => {
+  const userURL = urlsForUser(urlDatabase);
+  const { shortURL } = req.params;
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[req.cookies["user_id"]] };
-  res.render("urls_show", templateVars);
+ 
+  if (Object.keys(userURL).includes(shortURL)) {
+    res.render("urls_show", templateVars);
+    
+  } else {
+    res.status(400).send('You do not have permissions to edit URLs.');
+  }
 });
 
 
@@ -102,14 +123,29 @@ app.get("/u/:shortURL", (req, res) => {
 
 // delete button entry
 app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
-  res.redirect("/urls");
+  const { shortURL } = req.params;
+
+  const userURL = urlsForUser(urlDatabase);
+  if (Object.keys(userURL).includes(shortURL)) {
+    delete urlDatabase[shortURL];
+    res.redirect("/urls");
+  } else {
+    res.status(400).send('You do not have permissions to delete urls');
+  }
 });
 
 // edit button entry
 app.post('/urls/:shortURL', (req, res) => {
+  const { longURL } = req.bodyc;
   const shortURL = req.params.shortURL;
-  res.redirect(`/urls/${shortURL}`);
+
+  const userURL = urlsForUser(urlDatabase);
+  if (Object.keys[userURL].includes(shortURL)) {
+    urlDatabase[shortURL].longURL = longURL;
+    res.redirect("/urls");
+  } else {
+    res.status(400).send("You do not have permissions to edit URLs");
+  }
 });
 
 // update resource and redirect to mainpage
@@ -146,8 +182,8 @@ app.post('/register', (req, res) => {
   let userID = generateRandomString();
   users[userID] = {
     id: userID,
-    email: req.body.email,
-    password: req.body.password,
+    email: email,
+    password: password,
   };
   // user_id cookie for newly generated userID
   res.cookie("user_id", userID);
