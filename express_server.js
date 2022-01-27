@@ -54,6 +54,11 @@ app.get("/urls", (req, res) => {
 // route for creating new shortURL
 app.get("/urls/new", (req, res) => {
   const templateVars = { user: users[req.cookies["user_id"]] };
+
+  // if not a user -> cannot create shortened urls, redirect to login page
+  if(!templateVars.user){
+    res.redirect("/login")
+  }
   res.render("urls_new", templateVars);
 
   
