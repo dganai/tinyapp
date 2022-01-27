@@ -14,12 +14,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const urlDatabase = {
   "b2xVn2":  {
     longURL: "http://www.lighthouselabs.ca",
-    userID: "",
+    userID: "aJ48lW",
   },
 
   "9sm5xK": {
     longURL: "http://www.google.com",
-    userID: "",
+    userID: "aJ48lW",
   },
 };
 
@@ -63,8 +63,8 @@ app.get("/urls/new", (req, res) => {
   const templateVars = { user: users[req.cookies["user_id"]] };
 
   // if not a user -> cannot create shortened urls, redirect to login page
-  if(!templateVars.user){
-    res.redirect("/login")
+  if (!templateVars.user) {
+    res.redirect("/login");
   }
   res.render("urls_new", templateVars);
 
@@ -87,9 +87,17 @@ app.post("/urls", (req, res) => {
 
 
 
-app.get("/urls/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
+app.get("/u/:shortURL", (req, res) => {
+  if (urlDatabase[req.params.shortURL]) {
+
+    const longURL = urlDatabase[req.params.shortURL]['longURL'];
+    if (!longURL) {
+
+    } else {
+  
+      res.redirect(longURL);
+    }
+  }
 });
 
 // delete button entry
@@ -114,24 +122,24 @@ app.post("/urls/:shortURL/update", (req, res) => {
 
 // creating registration route
 app.get('/register', (req, res) => {
-  const templateVars = { user: users[req.cookies["user_id"]]}
+  const templateVars = { user: users[req.cookies["user_id"]]};
   res.render("_registration", templateVars);
 
 });
 
 // resgistration handler that takes registration form data
 app.post('/register', (req, res) => {
-  const email = req.body.email
-  const password = req.body.password
+  const email = req.body.email;
+  const password = req.body.password;
 
-  // if no email/password are entered, send 400 error 
+  // if no email/password are entered, send 400 error
   if (!email || !password) {
-    return res.status(400).send('Email and Password cannot be blank')
+    return res.status(400).send('Email and Password cannot be blank');
   }
 
   // if email is already registered
-  if(findEmail(email)) {
-    return res.status(400).send('Email is already registered')
+  if (findEmail(email)) {
+    return res.status(400).send('Email is already registered');
   }
 
   // new user object using generateRandomString function
@@ -150,28 +158,28 @@ app.post('/register', (req, res) => {
 // login route for login form template
 app.get('/login', (req, res) => {
   const templateVars = { user: users[req.cookies["user_id"]] };
-  res.render("login", templateVars)
-})
+  res.render("login", templateVars);
+});
 
 
 
 // login route
 app.post('/login', (req, res) => {
-  const email = req.body.email
-  const password = req.body.password
+  const email = req.body.email;
+  const password = req.body.password;
 
-  if(!email || !password) {
-    return res.status(400).send("Enter email and password")
+  if (!email || !password) {
+    return res.status(400).send("Enter email and password");
   }
   // check if email is valid
   if (!findEmail(email)) {
-    return res.status(403).send("Email cannot be found")
+    return res.status(403).send("Email cannot be found");
   }
   
   // check to see if email is found, compare passwords with existing user's password
   let userID = findEmail(email);
-  if(password !== users[userID].password) {
-    return res.status(403).send("Password is incorrect")
+  if (password !== users[userID].password) {
+    return res.status(403).send("Password is incorrect");
   }
 
   // set user_id cookie to user's random ID and redirect to /urls
