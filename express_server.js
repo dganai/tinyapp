@@ -73,6 +73,8 @@ const authenticateUser = (email, password, database) => {
 };
 
 
+
+
 // render mainpage and form to shorten new URLs
 app.get("/urls", (req, res) => {
   // if (!req.cookies["user_id"]) {
