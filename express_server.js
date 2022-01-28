@@ -35,7 +35,6 @@ const urlDatabase = {
   },
 };
 
-
 // create users object to store and access users in the app
 const users = {};
 
