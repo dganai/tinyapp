@@ -44,10 +44,11 @@ const generateRandomString = () => {
   return randomStr;
 };
 
-// helper function to find email in users obj
-const findEmail = (email) => {
-  for (const user in users) {
-    if (email === users[user].email) {
+// helper function to find user by email
+const findUserByEmail = (email, database) => {
+  for (const userID in database) {
+    const user = database[userID];
+    if (user.email === email) {
       return user;
     }
   }
@@ -68,7 +69,7 @@ const urlsForUser = (id) => {
 
 // helper function to authenticate user trying to log in
 const authenticateUser = (email, password, database) => {
-  const user = findEmail(email, database);
+  const user = findUserByEmail(email, database);
   if (user && bcrypt.compareSync(password, user.password)) {
     return user;
   }
@@ -183,7 +184,7 @@ app.post('/register', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const userID = generateRandomString();
-  const userFound = findEmail(email, users);
+  const userFound = findUserByEmail(email, users);
   
 
   // if no email/password are entered, send 400 error
@@ -238,12 +239,12 @@ app.post('/login', (req, res) => {
 
   }
   
-  if (!findEmail(email)) {
+  if (!findUserByEmail(email)) {
     return res.status(403).send("Email cannot be found");
   }
   
   // check to see if email is found, compare passwords with existing user's password
-  let userID = findEmail(email);
+  let userID = findUserByEmail(email);
   if (password !== users[userID].password) {
     return res.status(403).send("Password is incorrect");
   }
