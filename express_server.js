@@ -1,14 +1,14 @@
 const express = require("express");
 const app = express();
 const cookieParser = require('cookie-parser');
-app.use(cookieParser());
+const bodyParser = require("body-parser");
 const PORT = 8080; // default port
+const bcrypt = require('bcryptjs')
+const salt = bcrypt.genSaltSync(10) 
 
 // setting to ejs
 app.set("view engine", "ejs");
-
-
-const bodyParser = require("body-parser");
+app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const urlDatabase = {
@@ -63,6 +63,14 @@ const urlsForUser = (id) => {
   return userURL;
 };
 
+// helper function to authenticate user trying to log in
+const authenticateUser = (email, password, database) => {
+  const user = findEmail(email, database)
+  if(user && bcrypt.compareSync(password, user.password)) {
+    return user;
+  }
+  return false
+}
 
 
 // render mainpage and form to shorten new URLs
@@ -167,6 +175,7 @@ app.get('/register', (req, res) => {
 app.post('/register', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  
 
   // if no email/password are entered, send 400 error
   if (!email || !password) {
@@ -203,6 +212,7 @@ app.get('/login', (req, res) => {
 app.post('/login', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  const user = auther
 
   if (!email || !password) {
     return res.status(400).send("Enter email and password");
