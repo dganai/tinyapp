@@ -39,6 +39,16 @@ const urlDatabase = {
 const users = {};
 
 
+app.get('/', (req, res) => {
+  const userID = req.session.user_id;
+  if (userID) {
+    res.redirect('/urls');
+  } else {
+    res.redirect('/login');
+  }
+});
+
+
 // render mainpage and form to shorten new URLs
 app.get("/urls", (req, res) => {
   const userID = req.session.user_id;
