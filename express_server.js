@@ -3,8 +3,8 @@ const app = express();
 const cookieParser = require('cookie-parser');
 const bodyParser = require("body-parser");
 const PORT = 8080; // default port
-const bcrypt = require('bcryptjs')
-const salt = bcrypt.genSaltSync(10) 
+const bcrypt = require('bcryptjs');
+const salt = bcrypt.genSaltSync(10);
 
 // setting to ejs
 app.set("view engine", "ejs");
@@ -65,12 +65,12 @@ const urlsForUser = (id) => {
 
 // helper function to authenticate user trying to log in
 const authenticateUser = (email, password, database) => {
-  const user = findEmail(email, database)
-  if(user && bcrypt.compareSync(password, user.password)) {
+  const user = findEmail(email, database);
+  if (user && bcrypt.compareSync(password, user.password)) {
     return user;
   }
-  return false
-}
+  return false;
+};
 
 
 // render mainpage and form to shorten new URLs
@@ -182,6 +182,8 @@ app.post('/register', (req, res) => {
     return res.status(400).send('Email and Password cannot be blank');
   }
 
+  
+
   // if email is already registered
   if (findEmail(email)) {
     return res.status(400).send('Email is already registered');
@@ -192,7 +194,7 @@ app.post('/register', (req, res) => {
   users[userID] = {
     id: userID,
     email: email,
-    password: password,
+    password: bcrypt.hashSync(password, salt),
   };
   // user_id cookie for newly generated userID
   res.cookie("user_id", userID);
@@ -212,12 +214,23 @@ app.get('/login', (req, res) => {
 app.post('/login', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  const user = auther
-
+ 
+  // no email or password, send 400 error
   if (!email || !password) {
     return res.status(400).send("Enter email and password");
   }
-  // check if email is valid
+
+  // check if user credentials are valid
+  const user = authenticateUser(email, password, users);
+  if (user) {
+    req.cookie["user_id"] = user;
+    return res.redirect('/urls');
+
+  }
+
+
+  
+  
   if (!findEmail(email)) {
     return res.status(403).send("Email cannot be found");
   }
