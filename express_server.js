@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session')
 const bodyParser = require("body-parser");
 const PORT = 8080; // default port
 const bcrypt = require('bcryptjs');
@@ -8,7 +8,10 @@ const salt = bcrypt.genSaltSync(10);
 
 // setting to ejs
 app.set("view engine", "ejs");
-app.use(cookieParser());
+app.use(cookiesession({
+  name: 'session',
+  keys: ['key1', 'key2']
+}))
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const urlDatabase = {
@@ -71,8 +74,6 @@ const authenticateUser = (email, password, database) => {
   }
   return false;
 };
-
-
 
 
 // render mainpage and form to shorten new URLs
