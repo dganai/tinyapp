@@ -36,5 +36,5 @@ describe('getUserByEmail', () => {
     const user = findUserByEmail('', testUsers);
     
     assert.equal(user, undefined);
-  })
+  });
 });
