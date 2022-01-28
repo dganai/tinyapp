@@ -42,7 +42,6 @@ const users = {};
 // render mainpage and form to shorten new URLs
 app.get("/urls", (req, res) => {
   const userID = req.session.user_id;
-
   const templateVars = { urls: urlsForUser(userID, urlDatabase), user: users[userID] };
   res.render("urls_index", templateVars);
 });
@@ -50,7 +49,6 @@ app.get("/urls", (req, res) => {
 // route for creating new shortURL
 app.get("/urls/new", (req, res) => {
   const userID = req.session.user_id;
-
   const templateVars = { user: users[userID] };
 
   // if not a user -> cannot create shortened urls, redirect to login page
@@ -58,8 +56,6 @@ app.get("/urls/new", (req, res) => {
     res.redirect("/login");
   }
   res.render("urls_new", templateVars);
-
-  
 });
 
 // render for shortened URL with corresponding longURL
@@ -81,9 +77,10 @@ app.get("/urls/:shortURL", (req, res) => {
 
 // form submission
 app.post("/urls", (req, res) => {
-  const userID = request.session.user_id;
+  const shortURL = generateRandomString();
+  const userID = req.session.user_id;
   
-  if(userID) {
+  if (userID) {
     urlDatabase[shortURL] = {
       longURL: req.body.longURL,
       userID,
@@ -91,7 +88,7 @@ app.post("/urls", (req, res) => {
     res.redirect(`/urls/${shortURL}`);
 
   } else {
-    res.status(400).send("Please log in to create a short URL")
+    res.status(400).send("Please log in to create a short URL");
   }
 
 });
