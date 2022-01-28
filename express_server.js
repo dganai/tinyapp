@@ -6,6 +6,8 @@ const PORT = 8080; // default port
 const bcrypt = require('bcryptjs');
 const salt = bcrypt.genSaltSync(10);
 
+
+
 // setting to ejs
 app.set("view engine", "ejs");
 app.use(cookieSession({
@@ -14,8 +16,10 @@ app.use(cookieSession({
 }));
 app.use(bodyParser.urlencoded({ extended: true }));
 
+
+
 const urlDatabase = {
-  "b2xVn2":  {
+  "b2xVn2": {
     longURL: "http://www.lighthouselabs.ca",
     userID: "aJ48lW",
   },
@@ -29,52 +33,6 @@ const urlDatabase = {
 
 // create users object to store and access users in the app
 const users = {};
-
-
-// generate random strings for a user ID
-const generateRandomString = () => {
-  const characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  let randomStr = "";
-  for (let i = 0; i < 6; i++) {
-    // random number between 0 and number of alphanumeric chars
-    let randomNum = Math.floor(Math.random() * characters.length);
-    randomStr += characters[randomNum];
-
-  }
-  return randomStr;
-};
-
-// helper function to find user by email
-const findUserByEmail = (email, database) => {
-  for (const userID in database) {
-    const user = database[userID];
-    if (user.email === email) {
-      return user;
-    }
-  }
-  return false;
-};
-
-
-// function which returns the URLs where the userID is equal to the id of the currently logged-in user
-const urlsForUser = (id) => {
-  let userURL = {};
-  for (const url in urlDatabase) {
-    if (id === urlDatabase[url].userID) {
-      userURL[url] = urlDatabase[url];
-    }
-  }
-  return userURL;
-};
-
-// helper function to authenticate user trying to log in
-const authenticateUser = (email, password, database) => {
-  const user = findUserByEmail(email, database);
-  if (user && bcrypt.compareSync(password, user.password)) {
-    return user;
-  }
-  return false;
-};
 
 
 // render mainpage and form to shorten new URLs
@@ -192,7 +150,6 @@ app.post('/register', (req, res) => {
     return res.status(400).send('Email and Password cannot be blank');
   }
 
-  
 
   // if email is already registered
   if (userFound) {
@@ -230,14 +187,15 @@ app.post('/login', (req, res) => {
   if (!email || !password) {
     return res.status(400).send("Enter email and password");
   }
-
   // check if user credentials are valid
   const user = authenticateUser(email, password, users);
+  
   if (user) {
     req.session.user_id = user.id;
     return res.redirect('/urls');
 
   }
+
   
   if (!findUserByEmail(email)) {
     return res.status(403).send("Email cannot be found");
