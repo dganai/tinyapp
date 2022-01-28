@@ -117,9 +117,11 @@ app.get("/u/:shortURL", (req, res) => {
 
 // delete button entry
 app.post("/urls/:shortURL/delete", (req, res) => {
+  const userID = req.session.user_id;
+
   const { shortURL } = req.params;
 
-  const userURL = urlsForUser(urlDatabase);
+  const userURL = urlsForUser(userID, urlDatabase);
   if (Object.keys(userURL).includes(shortURL)) {
     delete urlDatabase[shortURL];
     res.redirect("/urls");
@@ -130,10 +132,11 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 // edit button entry
 app.post('/urls/:shortURL', (req, res) => {
-  const { longURL } = req.bodyc;
+  const { longURL } = req.body;
   const shortURL = req.params.shortURL;
+  const userID = req.session.user_id;
 
-  const userURL = urlsForUser(urlDatabase);
+  const userURL = urlsForUser(userID, urlDatabase);
   if (Object.keys[userURL].includes(shortURL)) {
     urlDatabase[shortURL].longURL = longURL;
     res.redirect("/urls");
