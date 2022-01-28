@@ -10,7 +10,7 @@ const findUserByEmail = (email, database) => {
       return user;
     }
   }
-  return false;
+  return undefined;
 };
 
 // helper function to authenticate user trying to log in
