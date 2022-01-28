@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const cookieSession = require('cookie-session')
+const cookieSession = require('cookie-session');
 const bodyParser = require("body-parser");
 const PORT = 8080; // default port
 const bcrypt = require('bcryptjs');
@@ -8,10 +8,10 @@ const salt = bcrypt.genSaltSync(10);
 
 // setting to ejs
 app.set("view engine", "ejs");
-app.use(cookiesession({
+app.use(cookieSession({
   name: 'session',
   keys: ['key1', 'key2']
-}))
+}));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const urlDatabase = {
@@ -78,19 +78,20 @@ const authenticateUser = (email, password, database) => {
 
 // render mainpage and form to shorten new URLs
 app.get("/urls", (req, res) => {
-  // if (!req.cookies["user_id"]) {
-  //  return res.status(403).send("Please log in to view shortened URLs");
-  // }
-  const templateVars = { urls: urlsForUser(urlDatabase), user: users[req.cookies["user_id"]] };
+  const userID = req.session.user_id;
+
+  const templateVars = { urls: urlsForUser(userID, urlDatabase), user: users[userID] };
   res.render("urls_index", templateVars);
 });
 
 // route for creating new shortURL
 app.get("/urls/new", (req, res) => {
-  const templateVars = { user: users[req.cookies["user_id"]] };
+  const userID = req.session.user_id;
+
+  const templateVars = { user: users[userID] };
 
   // if not a user -> cannot create shortened urls, redirect to login page
-  if (!templateVars.user) {
+  if (!userID) {
     res.redirect("/login");
   }
   res.render("urls_new", templateVars);
@@ -100,9 +101,11 @@ app.get("/urls/new", (req, res) => {
 
 // render for shortened URL with corresponding longURL
 app.get("/urls/:shortURL", (req, res) => {
-  const userURL = urlsForUser(urlDatabase);
+  const userID = req.session.user_id;
+
+  const userURL = urlsForUser(userID, urlDatabase);
   const { shortURL } = req.params;
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[req.cookies["user_id"]] };
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[userID] };
  
   if (Object.keys(userURL).includes(shortURL)) {
     res.render("urls_show", templateVars);
@@ -169,7 +172,8 @@ app.post("/urls/:shortURL/update", (req, res) => {
 
 // creating registration route
 app.get('/register', (req, res) => {
-  const templateVars = { user: users[req.cookies["user_id"]]};
+  const userID = req.session.user_id;
+  const templateVars = { user: users[userID]};
   res.render("_registration", templateVars);
 
 });
@@ -178,6 +182,8 @@ app.get('/register', (req, res) => {
 app.post('/register', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  const userID = generateRandomString();
+  const userFound = findEmail(email, users);
   
 
   // if no email/password are entered, send 400 error
@@ -188,26 +194,27 @@ app.post('/register', (req, res) => {
   
 
   // if email is already registered
-  if (findEmail(email)) {
+  if (userFound) {
     return res.status(400).send('Email is already registered');
   }
 
   // new user object using generateRandomString function
-  let userID = generateRandomString();
   users[userID] = {
     id: userID,
     email: email,
     password: bcrypt.hashSync(password, salt),
   };
   // user_id cookie for newly generated userID
-  res.cookie("user_id", userID);
+  req.session.user_id = userID;
   res.redirect('/urls');
 });
 
 
 // login route for login form template
 app.get('/login', (req, res) => {
-  const templateVars = { user: users[req.cookies["user_id"]] };
+  const userID = req.session.user_id;
+
+  const templateVars = { user: users[userID] };
   res.render("login", templateVars);
 });
 
@@ -226,13 +233,10 @@ app.post('/login', (req, res) => {
   // check if user credentials are valid
   const user = authenticateUser(email, password, users);
   if (user) {
-    req.cookie["user_id"] = user;
+    req.session.user_id = user.id;
     return res.redirect('/urls');
 
   }
-
-
-  
   
   if (!findEmail(email)) {
     return res.status(403).send("Email cannot be found");
@@ -245,13 +249,13 @@ app.post('/login', (req, res) => {
   }
 
   // set user_id cookie to user's random ID and redirect to /urls
-  res.cookie("user_id", userID);
+  req.session.user_id = user.id;
   res.redirect("/urls");
 });
 
 // logout
 app.post('/logout', (req, res) => {
-  res.clearCookie("user_id");
+  req.session = null;
   res.redirect("/urls");
 });
 
