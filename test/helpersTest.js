@@ -31,4 +31,10 @@ describe('getUserByEmail', () => {
 
     assert.equal(user, undefined);
   });
+
+  it('should return undefined if email is non-existent', () => {
+    const user = findUserByEmail('', testUsers);
+    
+    assert.equal(user, undefined);
+  })
 });
