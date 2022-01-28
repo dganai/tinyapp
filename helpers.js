@@ -23,7 +23,7 @@ const authenticateUser = (email, password, database) => {
 };
 
 // function which returns the URLs where the userID is equal to the id of the currently logged-in user
-const urlsForUser = (id) => {
+const urlsForUser = (id, urlDatabase) => {
   const userURL = {};
   for (const url in urlDatabase) {
     if (id === urlDatabase[url].userID) {
@@ -53,4 +53,4 @@ module.exports = {
   authenticateUser,
   urlsForUser,
   generateRandomString
-}
+};
