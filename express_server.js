@@ -6,8 +6,6 @@ const PORT = 8080; // default port
 const bcrypt = require('bcryptjs');
 const salt = bcrypt.genSaltSync(10);
 
-
-
 // setting to ejs
 app.set("view engine", "ejs");
 app.use(cookieSession({
@@ -16,6 +14,13 @@ app.use(cookieSession({
 }));
 app.use(bodyParser.urlencoded({ extended: true }));
 
+
+const {
+  findUserByEmail,
+  authenticateUser,
+  urlsForUser,
+  generateRandomString,
+} = require('./helpers');
 
 
 const urlDatabase = {
@@ -77,9 +82,19 @@ app.get("/urls/:shortURL", (req, res) => {
 
 // form submission
 app.post("/urls", (req, res) => {
-  const shortURL = generateRandomString(); // creating random short url and add to URL database then redirect
-  urlDatabase[shortURL] = req.body.longURL;
-  res.redirect(`/urls/${shortURL}`);
+  const userID = request.session.user_id;
+  
+  if(userID) {
+    urlDatabase[shortURL] = {
+      longURL: req.body.longURL,
+      userID,
+    };
+    res.redirect(`/urls/${shortURL}`);
+
+  } else {
+    res.status(400).send("Please log in to create a short URL")
+  }
+
 });
 
 
